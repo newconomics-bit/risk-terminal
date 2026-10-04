@@ -1,0 +1,29 @@
+market:
+  base_currency: USD
+  quote_currency: IDR
+  lookback_days: 30
+
+commodities:
+  watchlist:
+    - brent
+    - gold
+    - cpo
+
+geopolitics:
+  keywords:
+    - red sea
+    - suez
+    - malacca
+    - south china sea
+    - tariff
+    - sanction
+    - export control
+    - brics
+    - de-dollarization
+    - supply chain
+
+alerts:
+  usdidr_move_pct: 1.5
+  commodity_move_pct: 3.0
+  risk_score_yellow: 50
+  risk_score_red: 70
