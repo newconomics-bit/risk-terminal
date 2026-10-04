@@ -42,6 +42,10 @@ Terminal ini menjawab 3 pertanyaan utama:
 
 MVP / personal use.
 
+## Dokumentasi
+
+Lihat [PRD.md](PRD.md) untuk spesifikasi lengkap produk, arsitektur, dan acceptance criteria setiap wave.
+
 ## Disclaimer
 
 Proyek ini untuk edukasi dan analisis pribadi. Bukan rekomendasi keuangan atau investasi.
