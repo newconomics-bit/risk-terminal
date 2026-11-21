@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "generated_at": "2026-10-09T00:05:29+07:00",
+    "timezone": "Asia/Jakarta",
+    "version": "0.1.0",
+    "pipeline_run_id": "manual-or-gha"
+  },
+  "status": {
+    "score": 35,
+    "level": "GREEN",
+    "headline": "Kondisi relatif stabil.",
+    "recommended_action": "Kondisi relatif stabil. Lanjutkan pemantauan rutin.",
+    "components": {
+      "currency_stress": 0,
+      "commodity_stress": 0,
+      "geopolitical_stress": 25,
+      "uncertainty_penalty": 10
+    }
+  },
+  "market": {
+    "fx": {
+      "usdidr": {
+        "symbol": "USDIDR",
+        "rate": 17875.712075,
+        "change_1d_pct": null,
+        "change_7d_pct": null,
+        "as_of": "2026-10-09T00:05:27+07:00",
+        "source": "open.er-api.com"
+      }
+    },
+    "commodities": [
+      {
+        "symbol": "BRENT",
+        "name": "Brent Crude Oil",
+        "price": 82.4,
+        "unit": "USD/bbl",
+        "change_1d_pct": null,
+        "change_7d_pct": null,
+        "as_of": "2026-10-09T00:05:27+07:00",
+        "source": "fallback"
+      },
+      {
+        "symbol": "GOLD",
+        "name": "Gold",
+        "price": 2650.0,
+        "unit": "USD/oz",
+        "change_1d_pct": null,
+        "change_7d_pct": null,
+        "as_of": "2026-10-09T00:05:27+07:00",
+        "source": "fallback"
+      },
+      {
+        "symbol": "CPO",
+        "name": "Crude Palm Oil",
+        "price": 920.0,
+        "unit": "USD/MT",
+        "change_1d_pct": null,
+        "change_7d_pct": null,
+        "as_of": "2026-10-09T00:05:27+07:00",
+        "source": "fallback"
+      }
+    ]
+  },
+  "geopolitics": {
+    "events": [
+      {
+        "title": "Watch: Why was the sign at the British consulate in East Jerusalem removed?",
+        "link": "https://www.bbc.co.uk/news/videos/c962yz01l7mmo?at_medium=RSS&at_campaign=rss",
+        "source": "BBC News",
+        "published_at": "2026-10-08T12:01:55Z",
+        "tags": [
+          "sanction"
+        ],
+        "risk_weight": 25,
+        "matched_keywords": [
+          "sanction"
+        ]
+      }
+    ],
+    "keyword_counts": {
+      "sanction": 1
+    },
+    "top_tags": [
+      "sanction"
+    ]
+  },
+  "impact": {
+    "import_cost_pressure": "LOW",
+    "input_price_risk": "LOW",
+    "supply_chain_risk": "HIGH"
+  }
+}
