@@ -10,6 +10,7 @@ import os
 from datetime import datetime, timezone, timedelta
 
 import feedparser
+import requests
 import yaml
 
 from src.utils.io import load_json
@@ -20,14 +21,11 @@ logger = logging.getLogger(__name__)
 WIB = timezone(timedelta(hours=7))
 
 # Sumber RSS yang digunakan (public, legal, stabil)
+# Reuters dihapus: feed 404 terverifikasi
 RSS_FEEDS = [
     {
         "name": "BBC News",
         "url": "http://feeds.bbci.co.uk/news/rss.xml",
-    },
-    {
-        "name": "Reuters",
-        "url": "https://www.reutersagency.com/feed/?best-topics=business-finance&post_type=best",
     },
     {
         "name": "Al Jazeera",
@@ -100,10 +98,15 @@ def _match_keywords(text, keywords):
 def _fetch_feed(feed_url, feed_name):
     """
     Membaca satu RSS feed dan mengembalikan list event.
+    Menggunakan requests.get dengan timeout 10 detik, lalu parse dengan feedparser.
     """
     events = []
     try:
-        feed = feedparser.parse(feed_url)
+        # Fetch dengan requests + timeout 10 detik
+        resp = requests.get(feed_url, timeout=10)
+        resp.raise_for_status()
+        feed = feedparser.parse(resp.content)
+
         if feed.bozo:
             logger.warning(
                 "Feed %s (%s) memiliki masalah parsing.", feed_name, feed_url
