@@ -17,7 +17,15 @@ Mendukung mode --dry-run untuk self-check tanpa menulis file.
 
 import argparse
 import logging
+import os
+import socket
+import sys
 from datetime import datetime, timezone, timedelta
+
+# Bootstrap: tambahkan root project ke sys.path agar import src.* jalan di CI
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Set default socket timeout 15 detik untuk mencegah hang di CI
+socket.setdefaulttimeout(15)
 
 from src.fetchers.fx import fetch_usdidr
 from src.fetchers.commodities import fetch_all as fetch_commodities

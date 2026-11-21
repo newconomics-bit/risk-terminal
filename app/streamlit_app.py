@@ -341,7 +341,6 @@ def main():
     data = load_latest_data()
 
     if data is None:
-        st.set_page_config(page_title="Risk Terminal", page_icon="🌍", layout="centered")
         st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
         st.markdown("""
         <div class="status-card" style="text-align: center; padding: 40px 20px;">
