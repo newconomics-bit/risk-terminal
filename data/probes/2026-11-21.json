@@ -1,0 +1,15 @@
+{
+  "probed_at": "2026-11-21T17:12:26.344855+00:00",
+  "alltick": {
+    "available": false,
+    "gold_usd": {},
+    "wti_usd": {},
+    "verdict": "failed"
+  },
+  "pink_sheet": {
+    "available": false,
+    "cpo_month": null,
+    "cpo_usd_per_mt": null,
+    "verdict": "failed"
+  }
+}
