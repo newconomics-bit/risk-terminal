@@ -29,7 +29,12 @@ CPO_MIN, CPO_MAX = 500, 1500     # USD/MT
 
 
 def _probe_alltick(token: str) -> dict:
-    """Probe AllTick API untuk emas (XAUUSD) dan WTI (USOil)."""
+    """Probe AllTick API untuk emas (XAUUSD) dan WTI (USOIL).
+    
+    Docs: https://alltick.co/apis/en/api-reference/forex/trade-tick
+    Endpoint: https://quote.alltick.co/quote-b-api/trade-tick
+    Symbol codes dari code list: XAUUSD (emas/USD), USOIL (WTI crude oil)
+    """
     result = {"available": False, "gold_usd": {}, "wti_usd": {}, "verdict": "failed"}
 
     if not token:
@@ -37,30 +42,38 @@ def _probe_alltick(token: str) -> dict:
         return result
 
     headers = {"User-Agent": "RiskTerminal-Probe/1.0"}
-    base_url = "https://quote.tradeswitcher.com/quote/tick"
+    base_url = "https://quote.alltick.co/quote-b-api/trade-tick"
 
-    for symbol, name in [("XAUUSD", "gold_usd"), ("USOil", "wti_usd")]:
+    # Symbol codes per AllTick code list (Google Sheets)
+    # Gold: XAUUSD (emas/USD), WTI: USOIL
+    symbols = [
+        ("XAUUSD", "gold_usd"),
+        ("USOIL", "wti_usd"),
+    ]
+
+    for symbol, name in symbols:
         try:
-            # AllTick query format
-            query = {"trace": f"probe_{symbol.lower()}", "symbol": symbol}
-            params = {"token": token, "query": json.dumps(query)}
+            # AllTick query format per docs
+            query_data = {
+                "trace": f"probe_{symbol.lower()}",
+                "data": {"symbol_list": [{"code": symbol}]}
+            }
+            params = {"token": token, "query": json.dumps(query_data)}
 
             resp = requests.get(base_url, params=params, headers=headers, timeout=10)
             resp.raise_for_status()
             data = resp.json()
 
-            # Parse response - struktur tergantung API AllTick
+            # Parse response per AllTick schema
             price = None
             ts = None
 
-            if isinstance(data, dict):
-                # Coba berbagai struktur response
-                if "data" in data and isinstance(data["data"], dict):
-                    price = data["data"].get("price") or data["data"].get("last")
-                    ts = data["data"].get("timestamp") or data["data"].get("time")
-                elif "price" in data:
-                    price = data["price"]
-                    ts = data.get("timestamp") or data.get("time")
+            if isinstance(data, dict) and data.get("ret") == 200:
+                tick_list = data.get("data", {}).get("tick_list", [])
+                if tick_list:
+                    tick = tick_list[0]
+                    price = tick.get("price")
+                    ts = tick.get("tick_time")
 
             if price is not None:
                 price = float(price)
@@ -93,70 +106,171 @@ def _probe_alltick(token: str) -> dict:
 
 
 def _probe_pink_sheet() -> dict:
-    """Download dan parse World Bank Pink Sheet untuk CPO."""
-    result = {"available": False, "cpo_month": None, "cpo_usd_per_mt": None, "verdict": "failed"}
+    """Download dan parse World Bank Pink Sheet untuk CPO (Palm Oil).
+    
+    File: CMO-Historical-Data-Monthly.xlsx dari thedocs.worldbank.org
+    Sheet target: "AFOSHEET" (agriculture), "Monthly Prices", "Monthly Indices"
+    Cari baris label mengandung "palm oil" (case-insensitive) di kolom 1
+    """
+    result = {
+        "available": False,
+        "cpo_month": None,
+        "cpo_usd_per_mt": None,
+        "verdict": "failed",
+        "debug": {
+            "sheet_names": [],
+            "searched_sheets": [],
+            "commodity_labels_found": {},
+            "palm_oil_matches": [],
+            "sample_rows_around_match": [],
+        }
+    }
 
     # URL World Bank Commodity Markets - file historis
-    # Biasanya: https://www.worldbank.org/en/research/commodity-markets
-    # File: CMO-Historical-Data-Monthly.xlsx atau serupa
-    urls_to_try = [
-        "https://thedocs.worldbank.org/en/doc/5d903e848db1d1b83e0ec8f744e55570-0350012021/related/CMO-Historical-Data-Monthly.xlsx",
-        "https://www.worldbank.org/en/research/commodity-markets",  # Halaman utama, perlu scraping
-    ]
+    url = "https://thedocs.worldbank.org/en/doc/5d903e848db1d1b83e0ec8f744e55570-0350012021/related/CMO-Historical-Data-Monthly.xlsx"
 
-    for url in urls_to_try:
-        try:
-            log.info(f"Mencoba download Pink Sheet dari: {url}")
-            resp = requests.get(url, timeout=30)
-            resp.raise_for_status()
+    try:
+        log.info(f"Mencoba download Pink Sheet dari: {url}")
+        resp = requests.get(url, timeout=30)
+        resp.raise_for_status()
 
-            # Cek apakah file Excel
-            content_type = resp.headers.get("Content-Type", "")
-            if "spreadsheet" not in content_type and "excel" not in content_type and not url.endswith(".xlsx"):
-                log.info(f"Bukan file Excel, skip: {content_type}")
-                continue
+        # Cek apakah file Excel
+        content_type = resp.headers.get("Content-Type", "")
+        if "spreadsheet" not in content_type and "excel" not in content_type and not url.endswith(".xlsx"):
+            log.info(f"Bukan file Excel, skip: {content_type}")
+            result["debug"]["error"] = f"Bukan file Excel: {content_type}"
+            return result
 
-            # Parse Excel di memory
-            wb = openpyxl.load_workbook(io.BytesIO(resp.content), read_only=True, data_only=True)
+        # Parse Excel di memory
+        wb = openpyxl.load_workbook(io.BytesIO(resp.content), read_only=True, data_only=True)
 
-            # Cari sheet yang berisi CPO (biasanya "Energy" atau "Agriculture")
-            cpo_price = None
-            cpo_month = None
+        # Debug: catat semua nama sheet
+        result["debug"]["sheet_names"] = wb.sheetnames
+        log.info(f"Sheet names: {wb.sheetnames}")
 
-            for sheet_name in wb.sheetnames:
-                if any(kw in sheet_name.lower() for kw in ["energy", "agri", "palm", "cpo", "vegetable"]):
-                    ws = wb[sheet_name]
-                    # Cari baris header dan data CPO
-                    for row in ws.iter_rows(values_only=True):
-                        if not row or not row[0]:
-                            continue
-                        cell_val = str(row[0]).lower()
-                        if "crude palm oil" in cell_val or "cpo" == cell_val.strip().lower():
-                            # Asumsi kolom terakhir = bulan terbaru
-                            for val in reversed(row[1:]):
-                                if val is not None:
-                                    try:
-                                        cpo_price = float(val)
-                                        # Coba ambil bulan dari header
-                                        break
-                                    except (ValueError, TypeError):
-                                        continue
-                            if cpo_price:
-                                break
+        # Coba semua sheet yang relevan untuk mencari palm oil
+        # Prioritas: AFOSHEET (agriculture), Monthly Prices, Monthly Indices
+        target_sheets = []
+        for sheet_name in wb.sheetnames:
+            lower = sheet_name.strip().lower()
+            if lower in ("afosheet", "monthly prices", "monthly indices"):
+                target_sheets.append(sheet_name)
+        if not target_sheets:
+            target_sheets = wb.sheetnames
+        
+        result["debug"]["searched_sheets"] = target_sheets
+        log.info(f"Sheets to search: {target_sheets}")
 
-            if cpo_price and CPO_MIN <= cpo_price <= CPO_MAX:
-                result["available"] = True
-                result["cpo_usd_per_mt"] = cpo_price
-                result["cpo_month"] = cpo_month or datetime.now().strftime("%Y-%m")
-                result["verdict"] = "ok"
-                log.info(f"Pink Sheet CPO: {cpo_price} USD/MT ({result['cpo_month']})")
+        cpo_price = None
+        cpo_month = None
+        found_sheet = None
+        
+        for target_sheet in target_sheets:
+            log.info(f"Mencari di sheet: {target_sheet}")
+            ws = wb[target_sheet]
+            
+            # Baca semua baris
+            all_rows = []
+            for row in ws.iter_rows(values_only=True):
+                all_rows.append(list(row) if row else [])
+            
+            # Debug: log first 10 rows of this sheet
+            log.info(f"  First 10 rows of {target_sheet}:")
+            for i, row in enumerate(all_rows[:10]):
+                if row:
+                    cols = [str(c)[:50] if c else "None" for c in row[:5]]
+                    log.info(f"    Row {i}: {cols}")
+            
+            # Cari label komoditas di kolom 1 (kolom 0 kosong untuk label)
+            commodity_labels = []
+            for idx, row in enumerate(all_rows):
+                if len(row) > 1 and row[1] and not row[0]:
+                    val = str(row[1]).strip()
+                    # Skip unit rows like "($/bbl)"
+                    if not val.startswith("(") and not val.replace(".", "").replace("-", "").isdigit():
+                        commodity_labels.append({"row": idx, "label": val})
+            
+            result["debug"]["commodity_labels_found"][target_sheet] = commodity_labels
+            log.info(f"  Found {len(commodity_labels)} commodity labels in {target_sheet}")
+            for cl in commodity_labels:
+                log.info(f"    Row {cl['row']}: {cl['label']}")
+            
+            # Cari palm oil di kolom 1
+            for idx, row in enumerate(all_rows):
+                if len(row) > 1 and row[1]:
+                    cell_val = str(row[1]).strip().lower()
+                    if "palm oil" in cell_val:
+                        log.info(f"  Found 'palm oil' at row {idx}: {row[1]}")
+                        match_info = {
+                            "sheet": target_sheet,
+                            "row": idx,
+                            "label": str(row[1]),
+                            "column": 1,
+                        }
+                        result["debug"]["palm_oil_matches"].append(match_info)
+                        
+                        # Ekstrak harga dari baris data berikutnya
+                        # Data rows: date in col 0 (format YYYYM##), price in col 1
+                        for data_idx in range(idx + 1, len(all_rows)):
+                            data_row = all_rows[data_idx]
+                            if not data_row or not data_row[0]:
+                                continue
+                            date_str = str(data_row[0]).strip()
+                            # Check if date format matches YYYYM## (e.g., 2024M01)
+                            if len(date_str) >= 6 and date_str[4] == 'M' and date_str[:4].isdigit() and date_str[5:].isdigit():
+                                # This is a data row, get the last non-null price in the row
+                                for val in reversed(data_row[1:]):
+                                    if val is not None:
+                                        try:
+                                            cpo_price = float(val)
+                                            cpo_month = date_str
+                                            break
+                                        except (ValueError, TypeError):
+                                            continue
+                                if cpo_price:
+                                    break
+                        if cpo_price:
+                            found_sheet = target_sheet
+                            break
+            
+            if cpo_price:
                 break
-            else:
-                log.warning(f"CPO price tidak valid atau tidak ditemukan: {cpo_price}")
 
-        except Exception as e:
-            log.warning(f"Pink Sheet probe gagal ({url}): {e}")
-            continue
+        # Debug: ambil sample rows di sekitar match pertama
+        if result["debug"]["palm_oil_matches"]:
+            first_match = result["debug"]["palm_oil_matches"][0]
+            match_sheet = first_match["sheet"]
+            match_row = first_match["row"]
+            ws = wb[match_sheet]
+            all_rows = []
+            for row in ws.iter_rows(values_only=True):
+                all_rows.append(list(row) if row else [])
+            
+            start = max(0, match_row - 2)
+            end = min(len(all_rows), match_row + 3)
+            for i in range(start, end):
+                row = all_rows[i]
+                if row:
+                    result["debug"]["sample_rows_around_match"].append({
+                        "row_index": i,
+                        "col0": str(row[0]) if row[0] else None,
+                        "col1": str(row[1]) if len(row) > 1 and row[1] else None,
+                    })
+
+        if cpo_price and CPO_MIN <= cpo_price <= CPO_MAX:
+            result["available"] = True
+            result["cpo_usd_per_mt"] = cpo_price
+            result["cpo_month"] = cpo_month
+            result["verdict"] = "ok"
+            log.info(f"Pink Sheet CPO (Palm Oil) dari sheet '{found_sheet}': {cpo_price} USD/MT ({cpo_month})")
+        else:
+            log.warning(f"CPO price tidak valid atau tidak ditemukan: {cpo_price}")
+            if not result["debug"].get("error"):
+                result["debug"]["error"] = f"Price invalid or not found: {cpo_price}"
+
+    except Exception as e:
+        log.warning(f"Pink Sheet probe gagal: {e}")
+        result["debug"]["error"] = str(e)
 
     return result
 
