@@ -1,0 +1,47 @@
+{
+  "probed_at": "2026-11-22T12:31:22.342595+00:00",
+  "alltick": {
+    "available": false,
+    "gold_usd": {},
+    "wti_usd": {},
+    "verdict": "failed"
+  },
+  "pink_sheet": {
+    "available": false,
+    "cpo_month": null,
+    "cpo_usd_per_mt": null,
+    "verdict": "failed",
+    "debug": {
+      "sheet_names": [
+        "AFOSHEET",
+        "Monthly Prices",
+        "Monthly Indices",
+        "Description",
+        "Index Weights"
+      ],
+      "searched_sheets": [
+        "AFOSHEET",
+        "Monthly Prices",
+        "Monthly Indices"
+      ],
+      "commodity_labels_found": {
+        "AFOSHEET": [],
+        "Monthly Prices": [
+          {
+            "row": 4,
+            "label": "Crude oil, average"
+          }
+        ],
+        "Monthly Indices": [
+          {
+            "row": 5,
+            "label": "Total Index"
+          }
+        ]
+      },
+      "palm_oil_matches": [],
+      "sample_rows_around_match": [],
+      "error": "Price invalid or not found: None"
+    }
+  }
+}
