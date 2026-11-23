@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-11-22T09:51:56+07:00",
+    "generated_at": "2026-11-23T10:33:47+07:00",
     "timezone": "Asia/Jakarta",
     "version": "0.1.0",
     "pipeline_run_id": "manual-or-gha"
@@ -21,10 +21,10 @@
     "fx": {
       "usdidr": {
         "symbol": "USDIDR",
-        "rate": 18291.407129,
+        "rate": 18276.102736,
         "change_1d_pct": null,
         "change_7d_pct": null,
-        "as_of": "2026-11-22T09:51:55+07:00",
+        "as_of": "2026-11-23T10:33:47+07:00",
         "source": "open.er-api.com"
       }
     },
@@ -36,7 +36,7 @@
         "unit": "USD/bbl",
         "change_1d_pct": null,
         "change_7d_pct": null,
-        "as_of": "2026-11-22T09:51:55+07:00",
+        "as_of": "2026-11-23T10:33:47+07:00",
         "source": "fallback"
       },
       {
@@ -46,7 +46,7 @@
         "unit": "USD/oz",
         "change_1d_pct": null,
         "change_7d_pct": null,
-        "as_of": "2026-11-22T09:51:55+07:00",
+        "as_of": "2026-11-23T10:33:47+07:00",
         "source": "fallback"
       },
       {
@@ -56,7 +56,7 @@
         "unit": "USD/MT",
         "change_1d_pct": null,
         "change_7d_pct": null,
-        "as_of": "2026-11-22T09:51:55+07:00",
+        "as_of": "2026-11-23T10:33:47+07:00",
         "source": "fallback"
       }
     ]
