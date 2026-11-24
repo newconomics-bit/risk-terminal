@@ -1,0 +1,120 @@
+{
+  "meta": {
+    "generated_at": "2026-11-24T13:48:15+07:00",
+    "timezone": "Asia/Jakarta",
+    "version": "0.1.0",
+    "pipeline_run_id": "manual-or-gha"
+  },
+  "status": {
+    "score": 50,
+    "level": "YELLOW",
+    "headline": "Waspadai tekanan kurs dan biaya input.",
+    "recommended_action": "Waspadai tekanan kurs dan biaya input. Tahan pembelian besar sampai tren lebih jelas. Pantau jalur pelayaran dan lead time pengiriman.",
+    "components": {
+      "currency_stress": 0,
+      "commodity_stress": 0,
+      "geopolitical_stress": 40,
+      "uncertainty_penalty": 10
+    }
+  },
+  "market": {
+    "fx": {
+      "usdidr": {
+        "symbol": "USDIDR",
+        "rate": 18195.480115,
+        "change_1d_pct": null,
+        "change_7d_pct": null,
+        "as_of": "2026-11-24T13:48:15+07:00",
+        "source": "open.er-api.com"
+      }
+    },
+    "commodities": [
+      {
+        "symbol": "BRENT",
+        "name": "Brent Crude Oil",
+        "price": 82.4,
+        "unit": "USD/bbl",
+        "change_1d_pct": null,
+        "change_7d_pct": null,
+        "as_of": "2026-11-24T13:48:15+07:00",
+        "source": "fallback"
+      },
+      {
+        "symbol": "GOLD",
+        "name": "Gold",
+        "price": 2650.0,
+        "unit": "USD/oz",
+        "change_1d_pct": null,
+        "change_7d_pct": null,
+        "as_of": "2026-11-24T13:48:15+07:00",
+        "source": "fallback"
+      },
+      {
+        "symbol": "CPO",
+        "name": "Crude Palm Oil",
+        "price": 920.0,
+        "unit": "USD/MT",
+        "change_1d_pct": null,
+        "change_7d_pct": null,
+        "as_of": "2026-11-24T13:48:15+07:00",
+        "source": "fallback"
+      }
+    ]
+  },
+  "geopolitics": {
+    "events": [
+      {
+        "title": "WHO chief visits Cuba as healthcare system deteriorates",
+        "link": "https://www.aljazeera.com/news/2026/11/24/who-chief-visits-cuba-as-healthcare-system-deteriorates?traffic_source=rss",
+        "source": "Al Jazeera",
+        "published_at": "2026-11-24T04:35:37Z",
+        "tags": [
+          "sanction"
+        ],
+        "risk_weight": 25,
+        "matched_keywords": [
+          "sanction"
+        ]
+      },
+      {
+        "title": "US adds Megaspeed to trade blacklist as Nvidia’s Huang returns as CEO",
+        "link": "https://www.aljazeera.com/economy/2026/11/24/us-adds-megaspeed-firm-at-centre-of-nvidia-scandal-to-export-control-list?traffic_source=rss",
+        "source": "Al Jazeera",
+        "published_at": "2026-11-24T00:52:47Z",
+        "tags": [
+          "export_control"
+        ],
+        "risk_weight": 25,
+        "matched_keywords": [
+          "export control"
+        ]
+      },
+      {
+        "title": "EU plans sports ban in sweeping new Russia sanctions proposal",
+        "link": "https://www.aljazeera.com/news/2026/11/23/eu-plans-sports-ban-in-sweeping-new-russia-sanctions-proposal?traffic_source=rss",
+        "source": "Al Jazeera",
+        "published_at": "2026-11-23T23:26:16Z",
+        "tags": [
+          "sanction"
+        ],
+        "risk_weight": 25,
+        "matched_keywords": [
+          "sanction"
+        ]
+      }
+    ],
+    "keyword_counts": {
+      "sanction": 2,
+      "export control": 1
+    },
+    "top_tags": [
+      "sanction",
+      "export_control"
+    ]
+  },
+  "impact": {
+    "import_cost_pressure": "LOW",
+    "input_price_risk": "LOW",
+    "supply_chain_risk": "HIGH"
+  }
+}
