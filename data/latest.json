@@ -1,19 +1,19 @@
 {
   "meta": {
-    "generated_at": "2026-11-25T12:15:52+07:00",
+    "generated_at": "2026-11-26T11:44:00+07:00",
     "timezone": "Asia/Jakarta",
     "version": "0.1.0",
     "pipeline_run_id": "manual-or-gha"
   },
   "status": {
-    "score": 30,
-    "level": "GREEN",
-    "headline": "Kondisi relatif stabil.",
-    "recommended_action": "Kondisi relatif stabil. Lanjutkan pemantauan rutin.",
+    "score": 50,
+    "level": "YELLOW",
+    "headline": "Waspadai tekanan kurs dan biaya input.",
+    "recommended_action": "Waspadai tekanan kurs dan biaya input. Tahan pembelian besar sampai tren lebih jelas. Pantau jalur pelayaran dan lead time pengiriman.",
     "components": {
       "currency_stress": 0,
       "commodity_stress": 0,
-      "geopolitical_stress": 20,
+      "geopolitical_stress": 40,
       "uncertainty_penalty": 10
     }
   },
@@ -24,7 +24,7 @@
         "rate": 18227.123111,
         "change_1d_pct": null,
         "change_7d_pct": null,
-        "as_of": "2026-11-25T12:15:52+07:00",
+        "as_of": "2026-11-26T11:43:59+07:00",
         "source": "open.er-api.com"
       }
     },
@@ -36,7 +36,7 @@
         "unit": "USD/bbl",
         "change_1d_pct": null,
         "change_7d_pct": null,
-        "as_of": "2026-11-25T12:15:52+07:00",
+        "as_of": "2026-11-26T11:43:59+07:00",
         "source": "fallback"
       },
       {
@@ -46,7 +46,7 @@
         "unit": "USD/oz",
         "change_1d_pct": null,
         "change_7d_pct": null,
-        "as_of": "2026-11-25T12:15:52+07:00",
+        "as_of": "2026-11-26T11:43:59+07:00",
         "source": "fallback"
       },
       {
@@ -56,7 +56,7 @@
         "unit": "USD/MT",
         "change_1d_pct": null,
         "change_7d_pct": null,
-        "as_of": "2026-11-25T12:15:52+07:00",
+        "as_of": "2026-11-26T11:43:59+07:00",
         "source": "fallback"
       }
     ]
@@ -64,10 +64,10 @@
   "geopolitics": {
     "events": [
       {
-        "title": "US preparing to unveil plan for new tariffs on global trading partners",
-        "link": "https://www.bbc.co.uk/news/articles/c893r9ke5p97o?at_medium=RSS&at_campaign=rss",
+        "title": "What we know about Trump's Thanksgiving tariffs",
+        "link": "https://www.bbc.co.uk/news/videos/c3x29v11ed1xo?at_medium=RSS&at_campaign=rss",
         "source": "BBC News",
-        "published_at": "2026-11-25T00:38:01Z",
+        "published_at": "2026-11-25T19:38:05Z",
         "tags": [
           "tariff"
         ],
@@ -75,12 +75,27 @@
         "matched_keywords": [
           "tariff"
         ]
+      },
+      {
+        "title": "Houthis target Saudi Arabia’s Red Sea ports as strikes escalate",
+        "link": "https://www.aljazeera.com/news/2026/11/25/houthis-target-saudi-arabias-red-sea-ports-as-strikes-escalate?traffic_source=rss",
+        "source": "Al Jazeera",
+        "published_at": "2026-11-25T23:33:39Z",
+        "tags": [
+          "red_sea"
+        ],
+        "risk_weight": 30,
+        "matched_keywords": [
+          "red sea"
+        ]
       }
     ],
     "keyword_counts": {
-      "tariff": 1
+      "tariff": 1,
+      "red sea": 1
     },
     "top_tags": [
+      "red_sea",
       "tariff"
     ]
   },
